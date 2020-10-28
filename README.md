@@ -10,7 +10,11 @@ MazeVision is a single player game to find the fastest/cheapest path from start 
 ## Installation using python3 and pip3
 python3 -m pip3 install --user PythonTurtle
 
-## HOW TO PLAY/RULES:
+## How to Run:
+1. Go to the MazeVision repository.
+2. Run python3 maze.py
+
+## RULES:
 <ul>
 <li>The maze is built using an array with a given size. The start point is where the player is positioned. There are multiple points where the player can exit the maze boundary - called the target. There exists only one end point - which has been reached by the minimum cost path. This decides whether the player won or lost.</li>
 <li>The game contains 6 features - Start, End, Targets, Portals and Position Costs
