@@ -9,7 +9,7 @@ import math
 
 wn = turtle.Screen()
 wn.bgcolor("black")
-wn.title("Maze adventure")
+wn.title("MazeVision")
 wn.setup(700,700)
 wn.tracer(0)
 wn.bgpic("./background.gif")

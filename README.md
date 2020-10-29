@@ -3,6 +3,9 @@
 # Maze Vision
 MazeVision is a single player game to find the fastest/cheapest path from start to end in a maze grid with walls. The walls will be built such that there are multiple paths leading to the target, but there is only one true path that exists with minimum cost. At the beginning of each maze, 4 positions are selected randomly to be "portals".  The agent can move from any portal to any portal in a single action costing 0. This will reduce the overall cost of the particular path, thereby making it the optimal path to the end. 
 
+![GitHub Logo](game.png)
+Format: ![Alt Text](url)
+
 ## Requirements
 1. Python 3+<br>
 2. turtle: <a href="https://pypi.org/project/PythonTurtle/">https://pypi.org/project/PythonTurtle/</a>
