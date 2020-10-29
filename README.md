@@ -28,9 +28,9 @@ From the Start node, the agent has to continue through the maze in the general d
 <li>
 	Color Combinations
 	<ul>
-		<li>Turtle: Brown</li>
+		<li>Turtle: Brown (player/agent)</li>
 		<li>Wall: White</li>
-		<li>End point: Green</li>
+		<li>Targets: Green</li>
 		<li>Portal: Yellow square with red arrow inside</li>
 		<li>Cell with cost 1: Purple</li>
 		<li>Cell with cost 2: Turquoise color (light blue)</li>

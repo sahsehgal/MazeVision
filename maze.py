@@ -14,8 +14,10 @@ wn.setup(700,700)
 wn.tracer(0)
 wn.bgpic("./background.gif")
 
+# Hash map storing cost values associated with cell (x,y) : 1
 score_map = {}
 
+# Pen class storing information about the cursor drawing on the screen
 class  Pen(turtle.Turtle):
         def  __init__(self):
                 turtle.Turtle.__init__(self)
@@ -24,6 +26,8 @@ class  Pen(turtle.Turtle):
                 self.penup()
                 self.speed(3)
 
+# Player class storing information about score and 
+# has methods handling user key strokes
 class Player(turtle.Turtle):
         def __init__(self):
                 turtle.Turtle.__init__(self)
@@ -35,6 +39,7 @@ class Player(turtle.Turtle):
                 self.score = 0
                 self.is_game_finished = False
 
+        # Handle up key stroke
         def go_up(self):
                 if self.is_game_finished == True:
                     return
@@ -54,6 +59,7 @@ class Player(turtle.Turtle):
                         self.goto(move_to_x, move_to_y)
                         return
 
+        # Handle down key stroke
         def go_down(self):
                 if self.is_game_finished == True:
                         return
@@ -73,6 +79,7 @@ class Player(turtle.Turtle):
                         self.goto(move_to_x, move_to_y)
                         return
 
+        # Handle left key stroke
         def go_left(self):
                 if self.is_game_finished == True:
                     return
@@ -92,6 +99,7 @@ class Player(turtle.Turtle):
                         self.goto(move_to_x, move_to_y)
                         return
 
+        # Handle right key stroke
         def go_right(self):
                 if self.is_game_finished == True:
                     return
@@ -111,6 +119,7 @@ class Player(turtle.Turtle):
                         self.goto(move_to_x, move_to_y)
                         return
 
+        # Check the collision with portal.
         def is_collision(self, other):
                 a = self.xcor()-other.xcor()
                 b = self.ycor()-other.ycor()
@@ -121,28 +130,37 @@ class Player(turtle.Turtle):
                 else:
                         return False
 
+# Update score value and show on screen
 def UpdateScore(obj, score):
     obj.clear()
     obj.goto(-250,300)
     obj.color("red")
     obj.write("Current score: {}".format(score),align="left", font=(11))
     obj.color("chocolate")
-    # turtle.goto(-250,250)
 
+# Portal Class initializing the portal cells
 class Portal(turtle.Turtle):
         def __init__(self, x, y):
                 turtle.Turtle.__init__(self)
                 v=self.getscreen()
-                # v.register_shape("./image/treasure.gif")
-                # self.shape("./image/treasure.gif")
                 self.color("red")
                 self.penup()
                 self.speed(0)
-                self.gold = 0
                 self.goto(x,y)
 
 level = [""]
 
+### Maze Board 
+# X: Wall
+# P: Start Player
+# H: Portal 1
+# K: Portal 2
+# E: Target
+# 1: Cell with cost value 1
+# 2: Cell with cost value 2
+
+# Update the board to try different paths
+###
 level_1 = [
 "XXXXXXXXXXXXXXXXXXXXXXXXX",
 "P1XXXXXXXH2111121211XXXXX",
@@ -175,6 +193,7 @@ portalsH = []
 portalsK = []
 level.append(level_1)
 
+# Function to initialize the maze
 def setup_maze(level):
         for y in range(len(level)):
                 for x in range(len(level[y])):
@@ -188,27 +207,32 @@ def setup_maze(level):
                                 pen.goto(screen_x, screen_y)
                                 pen.stamp()
                                 walls.append((screen_x, screen_y))
+                        
                         elif character =="1":
                                 pen.shape("classic")
                                 pen.color("purple")
                                 pen.goto(screen_x, screen_y)
                                 pen.stamp()
                                 score_map[(screen_x, screen_y)] = 1
+                        
                         elif character =="2":
                                 pen.shape("classic")
                                 pen.color("turquoise")
                                 pen.goto(screen_x, screen_y)
                                 pen.stamp()
                                 score_map[(screen_x, screen_y)] = 2
+                        
                         elif character=="P":
                                 score_map[(screen_x, screen_y)] = 0
                                 player.goto(screen_x, screen_y)
+                        
                         elif character =="E":
                                 pen.shape("circle")
                                 pen.color("green")
                                 pen.goto(screen_x, screen_y)
                                 pen.stamp()
                                 end_points.append((screen_x, screen_y))
+                        
                         elif character =="H": 
                                 pen.shape("square")
                                 pen.color("yellow") 
@@ -216,6 +240,7 @@ def setup_maze(level):
                                 pen.stamp()
                                 score_map[(screen_x, screen_y)] = 0                        
                                 portalsH.append(Portal(screen_x,screen_y))
+                        
                         elif character =="K":
                                 pen.shape("square")
                                 pen.color("yellow")
@@ -224,6 +249,7 @@ def setup_maze(level):
                                 score_map[(screen_x, screen_y)] = 0
                                 portalsK.append(Portal(screen_x,screen_y))
 
+# Function to end the game
 def EndGame():
         turtle.onscreenclick(None)
         turtle.speed(0)
@@ -247,7 +273,6 @@ turtle.onkey(player.go_right,"Right")
 turtle.onkey(player.go_up,"Up")
 turtle.onkey(player.go_down,"Down")
 
-Gold_left = 3
 wn.tracer(0)
 
 while True:
