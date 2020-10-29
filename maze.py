@@ -6,8 +6,6 @@
 
 import turtle
 import math
-from time import *
-import pygame
 
 wn = turtle.Screen()
 wn.bgcolor("black")
@@ -31,7 +29,7 @@ class Player(turtle.Turtle):
                 turtle.Turtle.__init__(self)
                 v=self.getscreen()
                 self.shape("turtle")
-                self.color("gold")
+                self.color("chocolate")
                 self.penup()
                 self.speed(0)
                 self.score = 0
@@ -128,7 +126,7 @@ def UpdateScore(obj, score):
     obj.goto(-250,300)
     obj.color("red")
     obj.write("Current score: {}".format(score),align="left", font=(11))
-    obj.color("gold")
+    obj.color("chocolate")
     # turtle.goto(-250,250)
 
 class Portal(turtle.Turtle):
@@ -169,7 +167,7 @@ level_1 = [
 "XX122XXXXXXXXXXXXX11XXXXX",
 "XX12221XXXXXXXXXXX12XXXXX",
 "XX111XXXX111XXXXX11111XXX",
-"XXXX1XXXXXX1XXXXXK111111E",
+"XXXX1XXXXXX111XXXK111111E",
 "XXXXXXXXXXXXXEXXXXXXXXXXX"
 ]
 
@@ -211,10 +209,18 @@ def setup_maze(level):
                                 pen.goto(screen_x, screen_y)
                                 pen.stamp()
                                 end_points.append((screen_x, screen_y))
-                        elif character =="H":  
+                        elif character =="H": 
+                                pen.shape("square")
+                                pen.color("yellow") 
+                                pen.goto(screen_x, screen_y)
+                                pen.stamp()
                                 score_map[(screen_x, screen_y)] = 0                        
                                 portalsH.append(Portal(screen_x,screen_y))
                         elif character =="K":
+                                pen.shape("square")
+                                pen.color("yellow")
+                                pen.goto(screen_x, screen_y)
+                                pen.stamp()
                                 score_map[(screen_x, screen_y)] = 0
                                 portalsK.append(Portal(screen_x,screen_y))
 
