@@ -6,13 +6,16 @@
 
 import turtle
 import math
+from levels import get_maze
+from helper import randomize_maze_board
+from game import start_game
 
-wn = turtle.Screen()
-wn.bgcolor("black")
-wn.title("MazeVision")
-wn.setup(700,700)
-wn.tracer(0)
-wn.bgpic("./background.gif")
+# wn = turtle.Screen()
+# wn.bgcolor("black")
+# wn.title("MazeVision")
+# wn.setup(700,700)
+# wn.tracer(0)
+# wn.bgpic("./background.gif")
 
 # Hash map storing cost values associated with cell (x,y) : 1
 score_map = {}
@@ -31,7 +34,7 @@ class  Pen(turtle.Turtle):
 class Player(turtle.Turtle):
         def __init__(self):
                 turtle.Turtle.__init__(self)
-                v=self.getscreen()
+                # v=self.getscreen()
                 self.shape("turtle")
                 self.color("chocolate")
                 self.penup()
@@ -193,6 +196,9 @@ portalsH = []
 portalsK = []
 level.append(level_1)
 
+walls = []
+end_points = []
+
 # Function to initialize the maze
 def setup_maze(level):
         for y in range(len(level)):
@@ -259,30 +265,53 @@ def EndGame():
         turtle.write("Game finished",align="left", font=(11))
         turtle.goto(2000,2000)
 
-pen= Pen()
-player = Player()
 
-walls = []
-end_points = []
 
-setup_maze(level[1])
 
-turtle.listen()
-turtle.onkey(player.go_left,"Left")
-turtle.onkey(player.go_right,"Right")
-turtle.onkey(player.go_up,"Up")
-turtle.onkey(player.go_down,"Down")
+# pen= Pen()
+# player = Player()
 
-wn.tracer(0)
+# setup_maze(level[1])
 
-while True:
-    for portal,next_portal in zip(portalsH,portalsH[1:]):
-            if player.is_collision(portal):
-                player.goto(next_portal.pos())
+# turtle.listen()
+# turtle.onkey(player.go_left,"Left")
+# turtle.onkey(player.go_right,"Right")
+# turtle.onkey(player.go_up,"Up")
+# turtle.onkey(player.go_down,"Down")
 
-    for portal,next_portal in zip(portalsK,portalsK[1:]):
-            if player.is_collision(portal):
-                player.goto(next_portal.pos())
-    wn.update()
+# wn.tracer(0)
+# while True:
+#         for portal,next_portal in zip(portalsH,portalsH[1:]):
+#                 if player.is_collision(portal):
+#                         player.goto(next_portal.pos())
 
-                
+#         for portal,next_portal in zip(portalsK,portalsK[1:]):
+#                 if player.is_collision(portal):
+#                         player.goto(next_portal.pos())
+#         wn.update()
+
+class Main:
+        active_maze = []
+        def print_maze(self, m):
+                for i in range(len(m)):
+                        print(m[i])
+        def main(self):
+                print("Welcome to maze vision 2020.")
+                print("Enter level number you want to play. ")
+                print("1. Basic")
+                print("2. Easy")
+                print("3. Intermediate")
+                print("4. Hard")
+                print("5. Master")
+                level = int(input())
+                print("\nYou selected", level)
+                if level not in [1,2,3,4]:
+                        print("You selected wrong value.")
+                        return
+                self.active_maze = randomize_maze_board(get_maze(level))
+                self.print_maze(self.active_maze)
+                start_game(self.active_maze)
+
+if __name__ == "__main__":
+        maze = Main()
+        maze.main()                
