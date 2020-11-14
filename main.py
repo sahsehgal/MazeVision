@@ -23,7 +23,7 @@ class Main:
                 print("5. Master")
                 level = int(input())
                 print("\nYou selected", level)
-                if level not in [1,2,3,4]:
+                if level not in [1,2,3,4,5]:
                         print("You selected wrong value.")
                         return
                 self.active_maze = randomize_maze_board(get_maze(level))
