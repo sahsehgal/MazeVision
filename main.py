@@ -5,7 +5,7 @@
 # 4. Anisha Siddapur Math (500681255)
 
 from levels import get_maze
-from helper import randomize_maze_board
+from helper import randomize_maze_board, find_optimal_path
 from game import start_game
 
 class Main:
@@ -28,7 +28,9 @@ class Main:
                         return
                 self.active_maze = randomize_maze_board(get_maze(level))
                 self.print_maze(self.active_maze)
-                start_game(self.active_maze)
+                print(find_optimal_path(self.active_maze))
+                # path, cost = find_optimal_path(self.active_maze)
+                # start_game(self.active_maze)
 
 if __name__ == "__main__":
         maze = Main()
