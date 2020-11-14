@@ -86,6 +86,8 @@ class Optimal_path:
             visited.add((x,y))
             path.append((x,y))
             self.dfs(maze, rows, cols, x, y, path, cost, visited)
+            if maze[x][y] not in ['P', 'H', 'K']:
+                cost -= int(maze[x][y])
             path.remove((x,y))
             visited.discard((x,y))
         return
