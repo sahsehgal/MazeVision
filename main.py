@@ -7,9 +7,11 @@
 from levels import get_maze
 from helper import randomize_maze_board, find_optimal_path
 from game import start_game
+import matplotlib.pyplot as plt
 
 class Main:
         active_maze = []
+        levels=0
         def print_maze(self, m):
                 for i in range(len(m)):
                         print(m[i])
@@ -22,6 +24,7 @@ class Main:
                 print("4. Hard")
                 print("5. Master")
                 level = int(input())
+                self.levels = level
                 print("\nYou selected", level)
                 if level not in [1,2,3,4,5]:
                         print("You selected wrong value.")
@@ -69,6 +72,9 @@ def graph_plot(self):
                 plt.ylabel('Frequency', fontsize=14)
                 plt.grid(True)
                 plt.savefig('Level ' + str(i) + ' Statistics.png')
+
+        
+                        
 
 if __name__ == "__main__":
         maze = Main()
