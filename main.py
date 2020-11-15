@@ -7,9 +7,11 @@
 from levels import get_maze
 from helper import randomize_maze_board, find_optimal_path
 from game import start_game
+import matplotlib.pyplot as plt
 
 class Main:
         active_maze = []
+        levels=0
         def print_maze(self, m):
                 for i in range(len(m)):
                         print(m[i])
@@ -22,6 +24,7 @@ class Main:
                 print("4. Hard")
                 print("5. Master")
                 level = int(input())
+                self.levels = level
                 print("\nYou selected", level)
                 if level not in [1,2,3,4,5]:
                         print("You selected wrong value.")
@@ -32,6 +35,36 @@ class Main:
                 # path, cost = find_optimal_path(self.active_maze)
                 # start_game(self.active_maze)
 
+        def graph_plot(self):
+                for i in [self.levels]:
+                        scores = []
+                        Iterations = []
+                        for turn in range(0,100):
+                                active_maze = randomize_maze_board(get_maze(i))
+                                path, cost = find_optimal_path(active_maze)
+                                scores.append(cost)
+                                
+                        freq = {} 
+                        for item in scores: 
+                                if (item in freq): 
+                                        freq[item] += 1
+                                else: 
+                                        freq[item] = 1
+                        
+                        cost = list(freq.keys())
+                        frequency = list(freq.values())
+
+                        fig = plt.figure(figsize = (10,5))
+                        plt.bar(cost,frequency, color = 'red', width = 0.1)
+                        plt.title('Level '+ str(i), fontsize=14)
+                        plt.xlabel('Cost', fontsize=14)
+                        plt.ylabel('Frequency', fontsize=14)
+                        plt.grid(True)
+                        plt.savefig('Level '+str(i)+' Statistics.png')
+                        plt.show()
+                        
+
 if __name__ == "__main__":
         maze = Main()
-        maze.main()                
+        maze.main()
+        maze.graph_plot()                

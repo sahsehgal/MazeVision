@@ -106,5 +106,4 @@ def find_optimal_path(maze):
     visited = set((x, y))
     obj = Optimal_path()
     obj.dfs(maze, rows, cols, x, y, path, cost, visited)
-    print ("min cost w path", obj.optimal_path, obj.min_cost)
     return obj.optimal_path, obj.min_cost
