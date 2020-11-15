@@ -5,7 +5,7 @@ import math
 score_map = {}
 
 # Update score value and show on screen
-def UpdateScore(obj, score):
+def UpdateScore(obj,score):
     obj.clear()
     obj.goto(-250,300)
     obj.color("red")
@@ -81,6 +81,14 @@ def setup_maze(level, pen, player):
                                 score_map[(screen_x, screen_y)] = 0
                                 portalsK.append(Portal(screen_x,screen_y))
 
+                        elif character =="G":
+                                pen.shape("square")
+                                pen.color("green")
+                                pen.goto(screen_x, screen_y)
+                                pen.stamp()
+                                score_map[(screen_x, screen_y)] = 1
+
+
 # Function to end the game
 def EndGame():
         turtle.onscreenclick(None)
@@ -93,6 +101,7 @@ def EndGame():
 
 walls = []
 end_points = []
+optimal_paths = []
 
 def start_game(board):
     # Pen class storing information about the cursor drawing on the screen
@@ -219,7 +228,6 @@ def start_game(board):
     player = Player()
     setup_maze(board, pen, player)
 
-    turtle.listen()
     turtle.onkey(player.go_left,"Left")
     turtle.onkey(player.go_right,"Right")
     turtle.onkey(player.go_up,"Up")

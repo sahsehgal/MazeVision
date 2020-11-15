@@ -1,4 +1,6 @@
 import numpy
+import turtle
+from game import UpdateScore
 
 def get_random_x_y(rows, cols):
     x = numpy.random.randint(low=0, high=rows, size=None, dtype='l')
@@ -81,12 +83,12 @@ class Optimal_path:
                     self.optimal_path = path.copy()
                 # print (path, cost)
                 return 
-            if maze[x][y] not in ['P', 'H', 'K']:
+            if maze[x][y] not in ['P', 'H', 'K','G']:
                 cost += int(maze[x][y])
             visited.add((x,y))
             path.append((x,y))
             self.dfs(maze, rows, cols, x, y, path, cost, visited)
-            if maze[x][y] not in ['P', 'H', 'K']:
+            if maze[x][y] not in ['P', 'H', 'K','G']:
                 cost -= int(maze[x][y])
             path.remove((x,y))
             visited.discard((x,y))
@@ -107,4 +109,13 @@ def find_optimal_path(maze):
     obj = Optimal_path()
     obj.dfs(maze, rows, cols, x, y, path, cost, visited)
     print ("min cost w path", obj.optimal_path, obj.min_cost)
+    turtle.goto(-250, 300)
+    turtle.color("red")
+    print("This is the cost:"+str(obj.min_cost))
+    turtle.write("Optimal Score:" + str(obj.min_cost))
     return obj.optimal_path, obj.min_cost
+
+
+
+
+
