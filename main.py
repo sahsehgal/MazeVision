@@ -11,29 +11,42 @@ import matplotlib.pyplot as plt
 
 class Main:
         active_maze = []
-        levels=0
         def print_maze(self, m):
                 for i in range(len(m)):
                         print(m[i])
         def main(self):
                 print("Welcome to maze vision 2020.")
-                print("Enter level number you want to play. ")
-                print("1. Basic")
-                print("2. Easy")
-                print("3. Intermediate")
-                print("4. Hard")
-                print("5. Master")
-                level = int(input())
-                self.levels = level
+                level = get_level_input()
                 print("\nYou selected", level)
                 if level not in [1,2,3,4,5]:
                         print("You selected wrong value.")
                         return
+                strategy = get_control_strategy()
+                print("\nYou selected", strategy)
+                if strategy not in [1,2,3,4]:
+                        print("You selected wrong value.")
+                        return
                 self.active_maze = randomize_maze_board(get_maze(level))
-                self.active_maze = show_optimal_path(self.active_maze)
-                start_game(self.active_maze)
-                graph_plot()
+                # self.active_maze = show_optimal_path(self.active_maze)
+                start_game(self.active_maze, strategy)
+                # graph_plot()
 
+def get_level_input():
+        print("Enter level number you want to play. ")
+        print("1. Basic")
+        print("2. Easy")
+        print("3. Intermediate")
+        print("4. Hard")
+        print("5. Master")
+        return int(input())
+
+def get_control_strategy():
+        print("Enter the control strategy number you want to go ahead.")
+        print("1. Human")
+        print("2. Baseline AI")
+        print("3. Tree-based AI")
+        print("4. Tree + NN based AI")
+        return int(input())
 
 def show_optimal_path(maze):
     path,cost = find_optimal_path(maze)

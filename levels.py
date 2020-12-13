@@ -2,23 +2,28 @@
 
 def get_maze(index):
     level_1 = [
-    "X   ",
-    "    ",
-    "X   "
+    "XXXXXXX",
+    "X     X",
+    "X     X",
+    "XXXXXXX",
     ]
 
     level_2 = [
-    "X   ",
-    "   X",
-    "    ",
-    "    "
+    "XXXXXX",
+    "X    X",
+    "X  X X",
+    "X    X",
+    "X   XX",
+    "XXXXXX"
     ]
 
     level_3 = [
-    "  X ",
-    "    ",
-    "X   ",
-    "   X"
+    "XXXXXXXX",
+    "X  X X X",
+    "X      X",
+    "X  X   X",
+    "X  X X X",
+    "XXXXXXXX"
     ]
 
     level_4 = [
@@ -30,11 +35,13 @@ def get_maze(index):
     ]
 
     level_5 = [
-    "XXXXX",
-    "X   X",
-    "X    ",
-    "X  XX",
-    "XX XX"
+    "XXXXXXXXXX",
+    "X    X   X",
+    "X        X",
+    "X  XX  X X",
+    "X        X",
+    "X    X   X",
+    "XXXXXXXXXX"
     ]
 
     if index == 1:

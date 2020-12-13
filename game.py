@@ -63,6 +63,7 @@ def setup_maze(level, pen, player):
                                 pen.color("green")
                                 pen.goto(screen_x, screen_y)
                                 pen.stamp()
+                                score_map[(screen_x, screen_y)] = 0
                                 end_points.append((screen_x, screen_y))
                         
                         elif character =="H": 
@@ -102,8 +103,10 @@ def EndGame():
 walls = []
 end_points = []
 optimal_paths = []
+next_action_queue = []
+visited_actions = []
 
-def start_game(board):
+def start_game(board, strategy):
     # Pen class storing information about the cursor drawing on the screen
     class  Pen(turtle.Turtle):
         def  __init__(self):
@@ -206,6 +209,43 @@ def start_game(board):
                     self.goto(move_to_x, move_to_y)
                     return
 
+        # Handle enter key stroke
+        def go_return(self):
+            if self.is_game_finished == True:
+                return
+
+            x = player.xcor()
+            y = player.ycor()
+
+            # Check if Right Action is wall
+            if (x + 24, y) not in walls and (x + 24, y) not in visited_actions:
+                 next_action_queue.append((x + 24, y))
+
+            # Check if Left Action is wall
+            if (x - 24, y) not in walls and (x - 24, y) not in visited_actions:
+                 next_action_queue.append((x - 24, y))
+
+            # Check if Up Action is wall
+            if (x, y + 24) not in walls and (x, y + 24) not in visited_actions:
+                 next_action_queue.append((x, y + 24))
+
+            # Check if Down Action is wall
+            if (x, y - 24) not in walls and (x, y - 24) not in visited_actions:
+                 next_action_queue.append((x, y - 24))
+
+            next_x, next_y = next_action_queue[-1]
+            self.goto(next_x, next_y)
+            next_action_queue.pop()
+            visited_actions.append((next_x, next_y))
+            
+            if (next_x, next_y) in end_points:
+                self.is_game_finished = True
+                EndGame()
+            else:
+                self.score += score_map[(next_x, next_y)]
+                UpdateScore(self, self.score)
+                self.goto(next_x, next_y)
+
         # Check the collision with portal.
         def is_collision(self, other):
             a = self.xcor()-other.xcor()
@@ -228,10 +268,13 @@ def start_game(board):
     player = Player()
     setup_maze(board, pen, player)
 
+    turtle.listen()
     turtle.onkey(player.go_left,"Left")
     turtle.onkey(player.go_right,"Right")
     turtle.onkey(player.go_up,"Up")
     turtle.onkey(player.go_down,"Down")
+    turtle.onkey(player.go_return,"Return")
+    visited_actions.append((player.xcor(), player.ycor()))
 
     wn.tracer(0)
 
