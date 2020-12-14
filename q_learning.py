@@ -1,5 +1,6 @@
 import turtle
 import math
+import random
 
 # Hash map storing cost values associated with cell (x,y) : 1
 score_map = {}
@@ -185,7 +186,6 @@ def start_qlearning_game(board, strategy):
             if max_reward == q_table[(x,y)][TOP] and (next_x, next_y) not in visited_actions and (next_x, next_y) not in walls:
                 next_action_queue.append((next_x, next_y)) 
 
-            print (next_action_queue)
             if len(next_action_queue) > 0:
                 next_x, next_y = next_action_queue[-1]
                 next_action_queue.pop()
@@ -208,33 +208,32 @@ def start_qlearning_game(board, strategy):
                     return False
 
         def train_model(self, current_state):
+                available_states = []
                 # Left action reward
                 x, y = (current_state[0] - offset_pixel, current_state[1])
                 q_table[current_state][LEFT] = rewards[(x,y)] + gamma * max(q_table[(x,y)])
+                if (x,y) not in walls:
+                        available_states.append((x,y))
 
                 # Right action reward
                 x, y = (current_state[0] + offset_pixel, current_state[1])
                 q_table[current_state][RIGHT] = rewards[(x,y)] + gamma * max(q_table[(x,y)])
+                if (x,y) not in walls:
+                        available_states.append((x,y))
 
                 # Bottom action reward
                 x, y = (current_state[0], current_state[1] - offset_pixel)
                 q_table[current_state][BOTTOM] = rewards[(x,y)] + gamma * max(q_table[(x,y)])
+                if (x,y) not in walls:
+                        available_states.append((x,y))
 
                 # Top action reward
                 x, y = (current_state[0], current_state[1] + offset_pixel)
                 q_table[current_state][TOP] = rewards[(x,y)] + gamma * max(q_table[(x,y)])
+                if (x,y) not in walls:
+                        available_states.append((x,y))
 
-                max_reward = max(q_table[current_state])
-
-                # Return New state
-                if max_reward == q_table[current_state][LEFT]:
-                        return (current_state[0] - offset_pixel, current_state[1]) 
-                elif max_reward == q_table[current_state][RIGHT]:
-                        return (current_state[0] + offset_pixel, current_state[1])
-                elif max_reward == q_table[current_state][BOTTOM]:
-                        return (current_state[0], current_state[1] - offset_pixel)
-                else:
-                        return (current_state[0], current_state[1] + offset_pixel)
+                return random.choice(available_states)
 
     
     wn = turtle.Screen()
@@ -258,10 +257,13 @@ def start_qlearning_game(board, strategy):
     # Training Model and updating q_table
     cur_state = (player.xcor(), player.ycor())
     for i in range(max_episodes):
-        if cur_state in end_points:
-            continue
-        cur_state = player.train_model(cur_state)
-        # print ("Episode {}".format(i+1))
+        cur_state = (player.xcor(), player.ycor())
+        num_of_nodes = 0
+        while cur_state not in end_points:
+                cur_state = player.train_model(cur_state)
+                num_of_nodes += 1
+        print ("Episode: {}".format(i+1))
+        print ("No. of nodes traversed: {}".format(num_of_nodes))
 
     while True:
         for portal,next_portal in zip(portalsH,portalsH[1:]):
