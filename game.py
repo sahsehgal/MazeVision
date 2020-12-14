@@ -211,7 +211,7 @@ def start_game(board, strategy):
 
         # Handle enter key stroke
         def go_return(self):
-            if self.is_game_finished == True:
+            if self.is_game_finished == True or strategy == 1:
                 return
 
             x = player.xcor()
@@ -233,9 +233,15 @@ def start_game(board, strategy):
             if (x, y - 24) not in walls and (x, y - 24) not in visited_actions:
                  next_action_queue.append((x, y - 24))
 
-            next_x, next_y = next_action_queue[-1]
+            if strategy == 2:
+                next_x, next_y = next_action_queue[-1]
+                next_action_queue.pop()
+
+            elif strategy == 3:
+                next_x, next_y = next_action_queue[0]
+                next_action_queue.pop(0)
+            
             self.goto(next_x, next_y)
-            next_action_queue.pop()
             visited_actions.append((next_x, next_y))
             
             if (next_x, next_y) in end_points:
