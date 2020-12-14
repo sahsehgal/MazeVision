@@ -39,6 +39,7 @@ def setup_maze(level, pen, player):
                                 pen.goto(screen_x, screen_y)
                                 pen.stamp()
                                 walls.append((screen_x, screen_y))
+                                score_map[(screen_x, screen_y)] = 0
                         
                         elif character =="1":
                                 pen.shape("classic")

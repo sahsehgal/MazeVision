@@ -5,38 +5,10 @@
 # 4. Anisha Siddapur Math (500681255)
 
 from levels import get_maze
-from helper import randomize_maze_board, find_optimal_path
+from helper import randomize_maze_board, get_level_statistics
 from game import start_game
 from q_learning import start_qlearning_game
 import matplotlib.pyplot as plt
-
-class Main:
-        active_maze = []
-        def print_maze(self, m):
-                for i in range(len(m)):
-                        print(m[i])
-        def main(self):
-                print("Welcome to maze vision 2020.")
-                level = get_level_input()
-                print("\nYou selected", level)
-                if level not in [1,2,3,4,5]:
-                        print("You entered wrong value.")
-                        return
-                strategy = get_control_strategy()
-                print("\nYou selected", strategy)
-                if strategy not in [1,2,3,4]:
-                        print("You entered wrong value.")
-                        return
-                self.active_maze = randomize_maze_board(get_maze(level))
-                
-                # If Neural Network selected
-                if strategy == 4:
-                        start_qlearning_game(self.active_maze, strategy)
-                else:
-                        start_game(self.active_maze, strategy)
-                
-                # self.active_maze = show_optimal_path(self.active_maze)
-                # graph_plot()
 
 def get_level_input():
         print("Enter level number you want to play. ")
@@ -53,49 +25,37 @@ def get_control_strategy():
         print("2. Baseline AI")
         print("3. Tree-based AI")
         print("4. Tree + NN based AI")
-        return int(input())
+        return int(input())                        
 
-def show_optimal_path(maze):
-    path,cost = find_optimal_path(maze)
-    for i in range(0, len(path)):
-         x, y = path[i]
-         if maze[x][y] not in ['P']:
-             list1 = list(maze[x])
-             list1[y] = 'G'
-             maze[x] = ''.join(list1)
-    return maze
+class Main:
+        def play_game(self):
+                print("Welcome to maze vision 2020.")
+                level = get_level_input()
+                print("\nYou selected", level)
+                if level not in [1,2,3,4,5]:
+                        print("You entered wrong value.")
+                        return
+                strategy = get_control_strategy()
+                print("\nYou selected", strategy)
+                if strategy not in [1,2,3,4]:
+                        print("You entered wrong value.")
+                        return
+                active_maze = randomize_maze_board(get_maze(level))
+                
+                # If Neural Network selected
+                if strategy == 4:
+                        start_qlearning_game(active_maze, strategy)
+                else:
+                        start_game(active_maze, strategy)
 
-
-def graph_plot(self):
-        for i in [self.levels]:
-                scores = []
-                Iterations = []
-                for turn in range(0, 100):
-                        active_maze = randomize_maze_board(get_maze(i))
-                        path, cost = find_optimal_path(active_maze)
-                        scores.append(cost)
-
-                freq = {}
-                for item in scores:
-                        if (item in freq):
-                                freq[item] += 1
-                        else:
-                                freq[item] = 1
-
-                cost = list(freq.keys())
-                frequency = list(freq.values())
-
-                fig = plt.figure(figsize=(10, 5))
-                plt.bar(cost, frequency, color='red', width=0.1)
-                plt.title('Level ' + str(i), fontsize=14)
-                plt.xlabel('Cost', fontsize=14)
-                plt.ylabel('Frequency', fontsize=14)
-                plt.grid(True)
-                plt.savefig('Level ' + str(i) + ' Statistics.png')
-
-        
-                        
+        def get_statistics(self):
+                for level in range(1,6):
+                        for instance in range(100):
+                                active_maze = randomize_maze_board(get_maze(level))
+                                print ("Level: {}, Instance: {}".format(level, instance+1))
+                                print ("Statistics: {}\n".format(get_level_statistics(active_maze, level)))
 
 if __name__ == "__main__":
         maze = Main()
-        maze.main()
+        # maze.play_game()
+        maze.get_statistics()

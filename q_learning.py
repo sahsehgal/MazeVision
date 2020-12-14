@@ -31,8 +31,6 @@ no_of_actions = 4
 LEFT, RIGHT, BOTTOM, TOP = (0,1,2,3)
 rewards = {}
 max_episodes = 1000
-epsilon = 0.25
-alpha = 0.01
 gamma = 0.9
 
 offset_pixel = 24
@@ -195,6 +193,12 @@ def start_qlearning_game(board, strategy):
                 if (next_x, next_y) in end_points:
                         self.is_game_finished = True
                         EndGame()
+            else:
+                print("Some Error occured. Could not find next step. Please close and try again.")
+                self.clear()
+                self.goto(-250,300)
+                self.color("red")
+                self.write("Some Error occured. Could not find next step. Please close and try again.")
 
         # Check the collision with portal.
         def is_collision(self, other):
