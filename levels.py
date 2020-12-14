@@ -27,11 +27,12 @@ def get_maze(index):
     ]
 
     level_4 = [
-    "XXXX",
-    "   X",
-    "X  X",
-    "   X",
-    "X  X"
+    "XXXXXX",
+    "X  X X",
+    "X  X X",
+    "X    X",
+    "X  X X",
+    "XXXXXX",
     ]
 
     level_5 = [

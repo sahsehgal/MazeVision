@@ -7,6 +7,7 @@
 from levels import get_maze
 from helper import randomize_maze_board, find_optimal_path
 from game import start_game
+from q_learning import start_qlearning_game
 import matplotlib.pyplot as plt
 
 class Main:
@@ -19,16 +20,22 @@ class Main:
                 level = get_level_input()
                 print("\nYou selected", level)
                 if level not in [1,2,3,4,5]:
-                        print("You selected wrong value.")
+                        print("You entered wrong value.")
                         return
                 strategy = get_control_strategy()
                 print("\nYou selected", strategy)
                 if strategy not in [1,2,3,4]:
-                        print("You selected wrong value.")
+                        print("You entered wrong value.")
                         return
                 self.active_maze = randomize_maze_board(get_maze(level))
+                
+                # If Neural Network selected
+                if strategy == 4:
+                        start_qlearning_game(self.active_maze, strategy)
+                else:
+                        start_game(self.active_maze, strategy)
+                
                 # self.active_maze = show_optimal_path(self.active_maze)
-                start_game(self.active_maze, strategy)
                 # graph_plot()
 
 def get_level_input():

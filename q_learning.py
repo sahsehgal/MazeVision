@@ -25,13 +25,24 @@ class Portal(turtle.Turtle):
 portalsH = []
 portalsK = []
 
+q_table = {}
+no_of_actions = 4
+LEFT, RIGHT, BOTTOM, TOP = (0,1,2,3)
+rewards = {}
+max_episodes = 1000
+epsilon = 0.25
+alpha = 0.01
+gamma = 0.9
+
+offset_pixel = 24
+
 # Function to initialize the maze
 def setup_maze(level, pen, player):
         for y in range(len(level)):
                 for x in range(len(level[y])):
                         character = level[y][x]
-                        screen_x = -288 + (x *24)
-                        screen_y = 288 - (y * 24)
+                        screen_x = -288 + (x * offset_pixel)
+                        screen_y = 288 - (y * offset_pixel)
 
                         if character =="X":
                                 pen.shape("square")
@@ -39,6 +50,8 @@ def setup_maze(level, pen, player):
                                 pen.goto(screen_x, screen_y)
                                 pen.stamp()
                                 walls.append((screen_x, screen_y))
+                                q_table[(screen_x, screen_y)] = [-3] * no_of_actions
+                                rewards[(screen_x, screen_y)] = -3
                         
                         elif character =="1":
                                 pen.shape("classic")
@@ -46,6 +59,8 @@ def setup_maze(level, pen, player):
                                 pen.goto(screen_x, screen_y)
                                 pen.stamp()
                                 score_map[(screen_x, screen_y)] = 1
+                                q_table[(screen_x, screen_y)] = [-1] * no_of_actions
+                                rewards[(screen_x, screen_y)] = -1
                         
                         elif character =="2":
                                 pen.shape("classic")
@@ -53,10 +68,14 @@ def setup_maze(level, pen, player):
                                 pen.goto(screen_x, screen_y)
                                 pen.stamp()
                                 score_map[(screen_x, screen_y)] = 2
+                                q_table[(screen_x, screen_y)] = [-2] * no_of_actions
+                                rewards[(screen_x, screen_y)] = -2
                         
                         elif character=="P":
                                 score_map[(screen_x, screen_y)] = 0
                                 player.goto(screen_x, screen_y)
+                                q_table[(screen_x, screen_y)] = [-1] * no_of_actions
+                                rewards[(screen_x, screen_y)] = -1
                         
                         elif character =="E":
                                 pen.shape("circle")
@@ -65,6 +84,8 @@ def setup_maze(level, pen, player):
                                 pen.stamp()
                                 score_map[(screen_x, screen_y)] = 0
                                 end_points.append((screen_x, screen_y))
+                                q_table[(screen_x, screen_y)] = [0] * no_of_actions
+                                rewards[(screen_x, screen_y)] = 0
                         
                         elif character =="H": 
                                 pen.shape("square")
@@ -73,6 +94,8 @@ def setup_maze(level, pen, player):
                                 pen.stamp()
                                 score_map[(screen_x, screen_y)] = 0                        
                                 portalsH.append(Portal(screen_x,screen_y))
+                                q_table[(screen_x, screen_y)] = [-1] * no_of_actions
+                                rewards[(screen_x, screen_y)] = -1
                         
                         elif character =="K":
                                 pen.shape("square")
@@ -81,6 +104,8 @@ def setup_maze(level, pen, player):
                                 pen.stamp()
                                 score_map[(screen_x, screen_y)] = 0
                                 portalsK.append(Portal(screen_x,screen_y))
+                                q_table[(screen_x, screen_y)] = [-1] * no_of_actions
+                                rewards[(screen_x, screen_y)] = -1
 
                         elif character =="G":
                                 pen.shape("square")
@@ -88,6 +113,8 @@ def setup_maze(level, pen, player):
                                 pen.goto(screen_x, screen_y)
                                 pen.stamp()
                                 score_map[(screen_x, screen_y)] = 1
+                                q_table[(screen_x, screen_y)] = [-1] * no_of_actions
+                                rewards[(screen_x, screen_y)] = -1
 
 
 # Function to end the game
@@ -106,7 +133,7 @@ optimal_paths = []
 next_action_queue = []
 visited_actions = []
 
-def start_game(board, strategy):
+def start_qlearning_game(board, strategy):
     # Pen class storing information about the cursor drawing on the screen
     class  Pen(turtle.Turtle):
         def  __init__(self):
@@ -129,128 +156,45 @@ def start_game(board, strategy):
             self.score = 0
             self.is_game_finished = False
 
-        # Handle up key stroke
-        def go_up(self):
-            if self.is_game_finished == True:
-                return
-
-            move_to_x = player.xcor()
-            move_to_y = player.ycor() + 24
-
-            if (move_to_x, move_to_y) in end_points:
-                    self.is_game_finished = True
-                    EndGame()
-                    self.goto(move_to_x, move_to_y)
-                    return
-
-            if (move_to_x, move_to_y) not in walls:
-                    self.score += score_map[(move_to_x, move_to_y)]
-                    UpdateScore(self, self.score)
-                    self.goto(move_to_x, move_to_y)
-                    return
-
-        # Handle down key stroke
-        def go_down(self):
-            if self.is_game_finished == True:
-                    return
-
-            move_to_x = player.xcor()
-            move_to_y = player.ycor() - 24
-
-            if (move_to_x, move_to_y) in end_points:
-                    self.is_game_finished = True
-                    EndGame()
-                    self.goto(move_to_x, move_to_y)
-                    return
-
-            if (move_to_x, move_to_y) not in walls:
-                    self.score += score_map[(move_to_x, move_to_y)]
-                    UpdateScore(self, self.score)
-                    self.goto(move_to_x, move_to_y)
-                    return
-
-        # Handle left key stroke
-        def go_left(self):
-            if self.is_game_finished == True:
-                return
-
-            move_to_x = player.xcor() - 24
-            move_to_y = player.ycor()
-
-            if (move_to_x, move_to_y) in end_points:
-                    self.is_game_finished = True
-                    EndGame()
-                    self.goto(move_to_x, move_to_y)
-                    return
-
-            if (move_to_x, move_to_y) not in walls:
-                    self.score += score_map[(move_to_x, move_to_y)]
-                    UpdateScore(self, self.score)
-                    self.goto(move_to_x, move_to_y)
-                    return
-
-        # Handle right key stroke
-        def go_right(self):
-            if self.is_game_finished == True:
-                return
-
-            move_to_x = player.xcor() + 24
-            move_to_y = player.ycor()
-
-            if (move_to_x, move_to_y) in end_points:
-                    self.is_game_finished = True
-                    EndGame()
-                    self.goto(move_to_x, move_to_y)
-                    return
-
-            if (move_to_x, move_to_y) not in walls:
-                    self.score += score_map[(move_to_x, move_to_y)]
-                    UpdateScore(self, self.score)
-                    self.goto(move_to_x, move_to_y)
-                    return
-
         # Handle enter key stroke
         def go_return(self):
-            if self.is_game_finished == True or strategy == 1:
+            if self.is_game_finished == True:
                 return
-
             x = player.xcor()
             y = player.ycor()
+            visited_actions.append((x,y))
+            max_reward = max(q_table[(x,y)])
 
-            # Check if Right Action is wall
-            if (x + 24, y) not in walls and (x + 24, y) not in visited_actions:
-                 next_action_queue.append((x + 24, y))
+            # Left Cell 
+            next_x, next_y = (x - offset_pixel, y)
+            if max_reward == q_table[(x,y)][LEFT] and (next_x, next_y) not in visited_actions and (next_x, next_y) not in walls:
+                next_action_queue.append((next_x, next_y)) 
+            
+            # Right Cell 
+            next_x, next_y = (x + offset_pixel, y)
+            if max_reward == q_table[(x,y)][RIGHT] and (next_x, next_y) not in visited_actions and (next_x, next_y) not in walls:
+                next_action_queue.append((next_x, next_y)) 
+            
+            # Bottom Cell 
+            next_x, next_y = (x, y - offset_pixel)
+            if max_reward == q_table[(x,y)][BOTTOM] and (next_x, next_y) not in visited_actions and (next_x, next_y) not in walls:
+                next_action_queue.append((next_x, next_y)) 
+            
+            # Top Cell 
+            next_x, next_y = (x, y + offset_pixel)
+            if max_reward == q_table[(x,y)][TOP] and (next_x, next_y) not in visited_actions and (next_x, next_y) not in walls:
+                next_action_queue.append((next_x, next_y)) 
 
-            # Check if Left Action is wall
-            if (x - 24, y) not in walls and (x - 24, y) not in visited_actions:
-                 next_action_queue.append((x - 24, y))
-
-            # Check if Up Action is wall
-            if (x, y + 24) not in walls and (x, y + 24) not in visited_actions:
-                 next_action_queue.append((x, y + 24))
-
-            # Check if Down Action is wall
-            if (x, y - 24) not in walls and (x, y - 24) not in visited_actions:
-                 next_action_queue.append((x, y - 24))
-
-            if strategy == 2 and len(next_action_queue):
+            print (next_action_queue)
+            if len(next_action_queue) > 0:
                 next_x, next_y = next_action_queue[-1]
                 next_action_queue.pop()
-
-            elif strategy == 3 and len(next_action_queue):
-                next_x, next_y = next_action_queue[0]
-                next_action_queue.pop(0)
-            
-            self.goto(next_x, next_y)
-            visited_actions.append((next_x, next_y))
-            
-            if (next_x, next_y) in end_points:
-                self.is_game_finished = True
-                EndGame()
-            else:
                 self.score += score_map[(next_x, next_y)]
                 UpdateScore(self, self.score)
                 self.goto(next_x, next_y)
+                if (next_x, next_y) in end_points:
+                        self.is_game_finished = True
+                        EndGame()
 
         # Check the collision with portal.
         def is_collision(self, other):
@@ -262,6 +206,36 @@ def start_game(board, strategy):
                     return True
             else:
                     return False
+
+        def train_model(self, current_state):
+                # Left action reward
+                x, y = (current_state[0] - offset_pixel, current_state[1])
+                q_table[current_state][LEFT] = rewards[(x,y)] + gamma * max(q_table[(x,y)])
+
+                # Right action reward
+                x, y = (current_state[0] + offset_pixel, current_state[1])
+                q_table[current_state][RIGHT] = rewards[(x,y)] + gamma * max(q_table[(x,y)])
+
+                # Bottom action reward
+                x, y = (current_state[0], current_state[1] - offset_pixel)
+                q_table[current_state][BOTTOM] = rewards[(x,y)] + gamma * max(q_table[(x,y)])
+
+                # Top action reward
+                x, y = (current_state[0], current_state[1] + offset_pixel)
+                q_table[current_state][TOP] = rewards[(x,y)] + gamma * max(q_table[(x,y)])
+
+                max_reward = max(q_table[current_state])
+
+                # Return New state
+                if max_reward == q_table[current_state][LEFT]:
+                        return (current_state[0] - offset_pixel, current_state[1]) 
+                elif max_reward == q_table[current_state][RIGHT]:
+                        return (current_state[0] + offset_pixel, current_state[1])
+                elif max_reward == q_table[current_state][BOTTOM]:
+                        return (current_state[0], current_state[1] - offset_pixel)
+                else:
+                        return (current_state[0], current_state[1] + offset_pixel)
+
     
     wn = turtle.Screen()
     wn.bgcolor("black")
@@ -272,17 +246,22 @@ def start_game(board, strategy):
 
     pen = Pen()
     player = Player()
+    player.speed(0)
     setup_maze(board, pen, player)
 
     turtle.listen()
-    turtle.onkey(player.go_left,"Left")
-    turtle.onkey(player.go_right,"Right")
-    turtle.onkey(player.go_up,"Up")
-    turtle.onkey(player.go_down,"Down")
     turtle.onkey(player.go_return,"Return")
     visited_actions.append((player.xcor(), player.ycor()))
 
     wn.tracer(0)
+
+    # Training Model and updating q_table
+    cur_state = (player.xcor(), player.ycor())
+    for i in range(max_episodes):
+        if cur_state in end_points:
+            continue
+        cur_state = player.train_model(cur_state)
+        # print ("Episode {}".format(i+1))
 
     while True:
         for portal,next_portal in zip(portalsH,portalsH[1:]):
