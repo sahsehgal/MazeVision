@@ -26,7 +26,7 @@ def get_control_strategy():
         print("1. Human")
         print("2. Baseline AI")
         print("3. Tree-based AI")
-        print("4. Tree + NN based AI")
+        print("4. Neural Network + tree based AI")
         return int(input())                        
 
 def plot_graph(data, key, title, file_name):
@@ -100,5 +100,11 @@ class Main:
 
 if __name__ == "__main__":
         maze = Main()
-        # maze.play_game()
-        maze.get_statistics()
+        print("Please enter your choice.")
+        print("1. Play game")
+        print("2. Generate Statistics for different strategies")
+        x = int(input())
+        if x == 1:
+                maze.play_game()
+        else:
+                maze.get_statistics()
